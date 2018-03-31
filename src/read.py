@@ -1,17 +1,4 @@
-signLookup = {'yyCM': ',', 'yyCLN': ':', 'yyLRB': '(', 'yyQUOT': '\"', 'yyDOT': '.', 'yyDASH': '-',
-              'yyRRB': ')', 'yyEXCL': '!', 'yyQM': '?', 'yySCLN': ';', 'yyELPS': '...'}
-
-letterLookup = {'A': 'à', 'B': 'á', 'G': 'â', 'D': 'ã', 'H': 'ä', 'V': 'å', 'W': 'å', 'Z': 'æ', 'U': '\"',
-              'X': 'ç', 'T': 'ú', 'I': 'é', 'K': 'ë', 'L': 'ì', 'M': 'î', 'N': 'ð', 'O': '%', 'J': 'è',
-              'S': 'ñ', 'E': 'ò', 'P': 'ô', 'C': 'ö', 'Q': '÷', 'R': 'ø', 'F': 'ù'}
-
-def decode(word):
-    newWord = word
-    for sign, letter in signLookup.iteritems():
-        newWord = newWord.replace(sign, letter)
-    for sign, letter in letterLookup.iteritems():
-        newWord = newWord.replace(sign, letter)
-    return newWord
+import utils
 
 def analyzeFile(fileName):    
     segmentTagsDict = {}
@@ -25,7 +12,7 @@ def analyzeFile(fileName):
         if line != '':
             segmentCount += 1
             segment, tag = line.split("\t")
-            if signLookup.get(tag) == None:
+            if utils.signLookup.get(tag) == None:
                 tagSet.add(tag)
                 tagCount += 1
             
