@@ -14,3 +14,27 @@ def decode(word):
     for sign, letter in letterLookup.iteritems():
         newWord = newWord.replace(sign, letter)
     return newWord
+
+def analyzeFile(fileName):    
+    segmentTagsDict = {}
+    tagSet = set()
+    segmentCount = 0
+    tagCount = 0
+    f = open(fileName, "r")
+    
+    for line in f:
+        line = line.strip()
+        if line != '':
+            segmentCount += 1
+            segment, tag = line.split("\t")
+            if signLookup.get(tag) == None:
+                tagSet.add(tag)
+                tagCount += 1
+            
+            entryValue = segmentTagsDict.get(segment)
+            if entryValue == None:
+                segmentTagsDict[segment] = {tag: 1}
+            else:
+                segmentTagsDict[segment][tag] = entryValue.get(tag, 0) + 1
+    f.close()
+    return segmentTagsDict, segmentCount, tagSet, tagCount
