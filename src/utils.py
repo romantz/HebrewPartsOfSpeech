@@ -27,9 +27,8 @@ def analyzeFile(fileName):
         if line != '':
             segmentCount += 1
             segment, tag = line.split("\t")
-            if signLookup.get(tag) == None:
-                tagSet.add(tag)
-                tagCount += 1
+            tagSet.add(tag)
+            tagCount += 1
             
             entryValue = segmentTagsDict.get(segment)
             if entryValue == None:
