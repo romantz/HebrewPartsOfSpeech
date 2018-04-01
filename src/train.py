@@ -1,5 +1,5 @@
 import utils
-import sys  # This library is imported in order to access execution arguments
+import sys  # This library is imported in order to access the program arguments
 
 if len(sys.argv) != 4:
     print 'Incorrect number of arguments'
@@ -7,7 +7,7 @@ if len(sys.argv) != 4:
     exit(0)
 
 model = sys.argv[1]
-fileName = sys.argv[2]
+trainFileName = sys.argv[2]
 smoothing = sys.argv[3]
 
 if smoothing == 'y':
@@ -19,7 +19,7 @@ else:
     print 'Correct calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >'
     exit(0)
 
-trainSegmentTagsDict, _, _, _ = utils.analyzeFile(fileName)
+trainSegmentTagsDict, _, _, _ = utils.analyzeFile(trainFileName)
 
 f = open('../exps/param.lex','w')
 
@@ -29,6 +29,7 @@ if int(model) == 1:
         totalSegmentOccurrences = sum(tagsDict.itervalues())
         for tag, count in tagsDict.iteritems():
             row += '\t' + tag + '\t' + str(count / float(totalSegmentOccurrences))
-        f.write(row)
+        f.write(row + '\n')
+        
 f.close()
         
