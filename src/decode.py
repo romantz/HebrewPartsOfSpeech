@@ -25,7 +25,7 @@ for line in paramFile1:
     while i < len(posProbs):
         if float(posProbs[i + 1]) > maxProb:
             maxPos = posProbs[i]
-            maxProb = posProbs[i + 1]
+            maxProb = float(posProbs[i + 1])
         i += 2
     segmentMajorityTagDict[seg] = maxPos
     
