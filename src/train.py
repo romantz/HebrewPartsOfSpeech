@@ -1,5 +1,6 @@
 import utils
 import sys  # This library is imported in order to access the program arguments
+import math
 
 if len(sys.argv) != 4:
     print 'Incorrect number of arguments'
@@ -28,7 +29,7 @@ if int(model) == 1:
         row = segment
         totalSegmentOccurrences = sum(tagsDict.itervalues())
         for tag, count in tagsDict.iteritems():
-            row += '\t' + tag + '\t' + str(count / float(totalSegmentOccurrences))
+            row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences), 10))
         f.write(row + '\n')
         
 f.close()

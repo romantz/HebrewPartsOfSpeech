@@ -20,10 +20,10 @@ for line in paramFile1:
     seg = splitLine[0]
     posProbs = splitLine[1:]
     maxPos = ''
-    maxProb = 0
+    maxProb = float('-inf')
     i = 0
     while i < len(posProbs):
-        if posProbs[i + 1] > maxProb:
+        if float(posProbs[i + 1]) > maxProb:
             maxPos = posProbs[i]
             maxProb = posProbs[i + 1]
         i += 2
