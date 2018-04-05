@@ -20,17 +20,33 @@ else:
     print 'Correct calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >'
     exit(0)
 
-trainSegmentTagsDict, _, _, _ = utils.analyzeFile(trainFileName)
+trainSegmentTagsDict, unigramDict, bigramDict = utils.analyzeFileQ2(trainFileName)
 
 f = open('../exps/param.lex','w')
 
-if int(model) == 1:
-    for segment, tagsDict in trainSegmentTagsDict.iteritems():
-        row = segment
-        totalSegmentOccurrences = sum(tagsDict.itervalues())
-        for tag, count in tagsDict.iteritems():
-            row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences), 10))
-        f.write(row + '\n')
+for segment, tagsDict in trainSegmentTagsDict.iteritems():
+    row = segment
+    totalSegmentOccurrences = sum(tagsDict.itervalues())
+    for tag, count in tagsDict.iteritems():
+        row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences), 10))
+    f.write(row + '\n')
         
+f.close()
+
+f = open('../exps/param.gram','w')
+
+f.write('\\data\\\n')
+f.write('ngram 1 = ' + str(len(unigramDict)) + '\n')
+f.write('ngram 2 = ' + str(len(bigramDict)) + '\n')
+f.write('\n')
+f.write('\\1-grams\\\n')
+for key,value in unigramDict.iteritems():
+    f.write(str(value) + '\t' + key + '\n')
+f.write('\n')
+f.write('\\2-grams\\\n')
+for key,value in bigramDict.iteritems():
+    f.write(str(value) + '\t' + '\t'.join(key.split(',')) + '\n')
+f.write('\n')
+
 f.close()
         

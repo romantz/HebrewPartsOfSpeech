@@ -1,7 +1,7 @@
 import utils
     
-trainSegmentTagsDict, trainSegmentCount, trainTagSet, trainTagCount = utils.analyzeFile("../data-files/heb-pos.train")
-goldSegmentTagsDict, goldSegmentCount, goldTagSet, goldTagCount = utils.analyzeFile("../data-files/heb-pos.gold")
+trainSegmentTagsDict, trainSegmentCount, trainTagSet, trainTagCount = utils.analyzeFileQ1("../data-files/heb-pos.train")
+goldSegmentTagsDict, goldSegmentCount, goldTagSet, goldTagCount = utils.analyzeFileQ1("../data-files/heb-pos.gold")
 
 trainAmbiguity = sum(map(lambda x: len(x), trainSegmentTagsDict.values())) / float(len(trainSegmentTagsDict))
 goldAmbiguity = sum(map(lambda x: len(x), goldSegmentTagsDict.values())) / float(len(goldSegmentTagsDict))
