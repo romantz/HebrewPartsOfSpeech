@@ -10,15 +10,14 @@ letterLookup = {'A': 'א', 'B': 'ב', 'G': 'ג', 'D': 'ד', 'H': 'ה', 'V': 'ו'
 
 
 def decode(word):
-    newWord = word
     for sign, letter in signLookup.iteritems():
-        newWord = newWord.replace(sign, letter)
+        word = word.replace(sign, letter)
     for sign, letter in letterLookup.iteritems():
-        newWord = newWord.replace(sign, letter)
-    return newWord
+        word = word.replace(sign, letter)
+    return word
 
 
-def analyzeFileQ1(fileName):    
+def analyzeFileQ1(fileName):
     segmentTagsDict = {}
     tagSet = set()
     segmentCount = 0
@@ -40,7 +39,8 @@ def analyzeFileQ1(fileName):
                     segmentTagsDict[segment][tag] = entryValue.get(tag, 0) + 1
     return segmentTagsDict, segmentCount, tagSet, tagCount
 
-def analyzeFileQ2(fileName):    
+
+def analyzeFileQ2(fileName):
     segmentTagsDict = {}
     unigramDict = {}
     bigramDict = {}
@@ -73,9 +73,8 @@ def analyzeFileQ2(fileName):
             lastTag = '<S>'
             newLine = True
         line = f.readline()
-    f.close()
-    for key,value in bigramDict.iteritems():
+    for key, value in bigramDict.iteritems():
         bigramDict[key] = math.log(value / float(unigramDict[key.split(',')[0]]), 10)
-    for key,value in unigramDict.iteritems():
+    for key, value in unigramDict.iteritems():
         unigramDict[key] = math.log(value / float(count), 10)
     return segmentTagsDict, unigramDict, bigramDict

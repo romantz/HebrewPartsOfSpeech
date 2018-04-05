@@ -33,7 +33,4 @@ with open('../exps/test.tagged', 'w') as taggedFile, open(testFileName, 'r') as 
         if segment == '':
             taggedFile.write('\n')
         else:
-            taggedFile.write(segment + '\t' + tag + '\n')
-
-testFile.close()
-taggedFile.close()
+            taggedFile.write('{}\t{}\n'.format(segment, tag))

@@ -1,5 +1,5 @@
 import utils
-    
+
 trainSegmentTagsDict, trainSegmentCount, trainTagSet, trainTagCount = utils.analyzeFileQ1("../data-files/heb-pos.train")
 goldSegmentTagsDict, goldSegmentCount, goldTagSet, goldTagCount = utils.analyzeFileQ1("../data-files/heb-pos.gold")
 

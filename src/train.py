@@ -22,7 +22,6 @@ else:
 
 trainSegmentTagsDict, unigramDict, bigramDict = utils.analyzeFileQ2(trainFileName)
 
-
 with open('../exps/param.lex', 'w') as f:
     if int(model) == 1:
         for segment, tagsDict in trainSegmentTagsDict.iteritems():
@@ -31,22 +30,17 @@ with open('../exps/param.lex', 'w') as f:
             for tag, count in tagsDict.iteritems():
                 row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences), 10))
             f.write(row + '\n')
-        
-f.close()
 
-with open('../exps/param.gram','w') as f:
+with open('../exps/param.gram', 'w') as f:
     f.write('\\data\\\n')
-    f.write('ngram 1 = ' + str(len(unigramDict)) + '\n')
-    f.write('ngram 2 = ' + str(len(bigramDict)) + '\n')
+    f.write('ngram 1 = {}\n'.format(len(unigramDict)))
+    f.write('ngram 2 = {}\n'.format(len(bigramDict)))
     f.write('\n')
     f.write('\\1-grams\\\n')
-    for key,value in unigramDict.iteritems():
-        f.write(str(value) + '\t' + key + '\n')
+    for key, value in unigramDict.iteritems():
+        f.write('{}\t{}\n'.format(value, key))
     f.write('\n')
     f.write('\\2-grams\\\n')
-    for key,value in bigramDict.iteritems():
-        f.write(str(value) + '\t' + '\t'.join(key.split(',')) + '\n')
+    for key, value in bigramDict.iteritems():
+        f.write('{}\t{}\n'.format(value, '\t'.join(key.split(','))))
     f.write('\n')
-
-f.close()
-

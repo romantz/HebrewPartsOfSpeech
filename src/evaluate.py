@@ -57,12 +57,8 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
                 exit(0)
             if goldTag == taggedTag:
                 correctCount += 1
-    
+
     A = A / float(totalSentenceLengths)
     totalAccuracy = totalAccuracy / float(N)
     evalFile.write('#\n')
-    evalFile.write('macro-avg\t' + str(A) + '\t' + str(totalAccuracy) + '\n')
-
-taggedFile.close()
-goldFile.close()
-evalFile.close()
+    evalFile.write('macro-avg\t{}\t{}\n'.format(A, totalAccuracy))
