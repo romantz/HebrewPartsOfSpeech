@@ -21,7 +21,7 @@ else:
     exit(0)
 
 with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFile, open('../exps/test.eval',
-                                                                                        'w') as evalFile:
+                                                                                        'w+') as evalFile:
     correctCount = 0
     totalSentenceLengths = 0
     totalAccuracy = 0
@@ -60,5 +60,5 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
 
     A = A / float(totalSentenceLengths)
     totalAccuracy = totalAccuracy / float(N)
-    evalFile.write('#————————————————————————\n')
-    evalFile.write('macro-avg\t' + str(A) + '\t' + str(totalAccuracy) + '\n')
+    evalFile.write('#\n')
+    evalFile.write('macro-avg\t{}\t{}\n'.format(A, totalAccuracy))
