@@ -1,8 +1,8 @@
 import sys  # This library is imported in order to access the program arguments
 
 if len(sys.argv) < 4:
-    print 'Incorrect number of arguments'
-    print 'Correct calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]'
+    print('Incorrect number of arguments')
+    print('Correct calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]')
     exit(0)
 
 model = sys.argv[1]
