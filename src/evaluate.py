@@ -62,10 +62,15 @@ for taggedLine in taggedFile:
         if goldTag == taggedTag:
            correctCount += 1 
 
+taggedFile.close()
+goldFile.close()
+
 A = A / float(totalSentenceLengths)
 totalAccuracy = totalAccuracy / float(N)
 evalFile.write('#————————————————————————\n')
 evalFile.write('macro-avg\t' + str(A) + '\t' + str(totalAccuracy) + '\n')
+
+evalFile.close()
 
 
 
