@@ -21,7 +21,7 @@ else:
     exit(0)
 
 with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFile, open('../exps/test.eval',
-                                                                                        'w') as evalFile:
+                                                                                        'w+') as evalFile:
     correctCount = 0
     totalSentenceLengths = 0
     totalAccuracy = 0

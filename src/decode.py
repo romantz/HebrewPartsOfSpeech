@@ -26,7 +26,7 @@ with open(paramFileName1, 'r') as paramFile1:
             i += 2
         segmentMajorityTagDict[seg] = maxPos
 
-with open('../exps/test.tagged', 'w') as taggedFile, open(testFileName, 'r') as testFile:
+with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
     for line in testFile:
         segment = line.strip()
         tag = segmentMajorityTagDict.get(segment, 'NPP')
