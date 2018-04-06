@@ -88,7 +88,6 @@ elif model == '2':
                     taggedFile.write('{}\t{}\n'.format(segment, tag))
                 taggedFile.write('\n')
                 sentence = []
-                break
         
     
     
