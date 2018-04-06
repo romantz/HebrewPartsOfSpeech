@@ -78,3 +78,38 @@ def analyzeFileQ2(fileName):
     for key, value in unigramDict.items():
         unigramDict[key] = math.log(value / float(count))
     return segmentTagsDict, unigramDict, bigramDict
+
+
+def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict):
+    v = [{}]
+    b = []
+    tags = []
+    for state in states:
+        v[0][state] = transitionProbabilityDict['<S>'].get(state, float('-inf')) + emissionProbabilityDict.get(sentence[0], {}).get(state, float('-inf'))
+    for i in range(1, len(sentence)):
+        v.append({})
+        b.append({})
+        for state1 in states:
+            maxProb = float('-inf')
+            maxState = ''
+            for state2 in states:
+                currentProb = v[i - 1][state2] + transitionProbabilityDict.get(state2, {}).get(state1, float('-inf')) + emissionProbabilityDict.get(sentence[i], {}).get(state1, float('-inf'))
+                if currentProb >= maxProb:
+                    maxState = state2
+                    maxProb = currentProb
+            v[i][state1] = maxProb
+            b[i-1][state1] = maxState
+    overallMaxProb = float('-inf')
+    overallMaxState = ''
+    for key, value in v[len(v) - 1].items():
+        if value >= overallMaxProb:
+            overallMaxProb = value
+            overallMaxState = key
+    tags.append(overallMaxState)
+    lastTag = overallMaxState
+    for i in reversed(range(len(b))):
+        newTag = b[i][lastTag]
+        tags.append(newTag)
+        lastTag = newTag
+    return list(reversed(tags))
+    
