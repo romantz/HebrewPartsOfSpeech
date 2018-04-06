@@ -74,7 +74,7 @@ def analyzeFileQ2(fileName):
             newLine = True
         line = f.readline()
     for key, value in bigramDict.items():
-        bigramDict[key] = math.log(value / float(unigramDict[key.split(',')[0]]), 10)
+        bigramDict[key] = math.log(value / float(unigramDict[key.split(',')[0]]))
     for key, value in unigramDict.items():
-        unigramDict[key] = math.log(value / float(count), 10)
+        unigramDict[key] = math.log(value / float(count))
     return segmentTagsDict, unigramDict, bigramDict

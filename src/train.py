@@ -28,7 +28,7 @@ with open('../exps/param.lex', 'w+') as f:
             row = segment
             totalSegmentOccurrences = sum(tagsDict.values())
             for tag, count in tagsDict.items():
-                row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences), 10))
+                row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences)))
             f.write(row + '\n')
 
 with open('../exps/param.gram', 'w+') as f:
