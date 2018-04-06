@@ -7,30 +7,43 @@ if len(sys.argv) < 4:
 
 model = sys.argv[1]
 testFileName = sys.argv[2]
-paramFileName1 = sys.argv[3]
+paramFileNameLex = sys.argv[3]
 
-segmentMajorityTagDict = {}
+if len(sys.argv) == 5:
+    paramFileNameGram = sys.argv[4]
 
-with open(paramFileName1, 'r') as paramFile1:
-    for line in paramFile1:
+emitionProbabilityDict = {}
+
+with open(paramFileNameLex, 'r') as paramFileLex:
+    for line in paramFileLex:
         splitLine = line.strip().split('\t')
         seg = splitLine[0]
         posProbs = splitLine[1:]
-        maxPos = ''
-        maxProb = float('-inf')
         i = 0
+        currentSegmentDict = {}
         while i < len(posProbs):
-            if float(posProbs[i + 1]) > maxProb:
-                maxPos = posProbs[i]
-                maxProb = float(posProbs[i + 1])
+            currentSegmentDict[posProbs[i]] = posProbs[i + 1]
             i += 2
-        segmentMajorityTagDict[seg] = maxPos
+        emitionProbabilityDict[seg] = currentSegmentDict
 
-with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
-    for line in testFile:
-        segment = line.strip()
-        tag = segmentMajorityTagDict.get(segment, 'NPP')
-        if segment == '':
-            taggedFile.write('\n')
-        else:
-            taggedFile.write('{}\t{}\n'.format(segment, tag))
+if model == '1':
+    with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
+        for line in testFile:
+            segment = line.strip()        
+            if segment == '':
+                taggedFile.write('\n')
+            else:
+                tags = emitionProbabilityDict.get(segment)
+                if tags != None:
+                    maxPos = ''
+                    maxProb = float('-inf')
+                    for key, value in tags.items():
+                        if float(value) > maxProb:
+                            maxPos = key
+                            maxProb = float(value)
+                    tag = maxPos
+                else:
+                    tag = 'NPP'
+                taggedFile.write('{}\t{}\n'.format(segment, tag))
+                    
+    
