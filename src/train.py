@@ -1,6 +1,5 @@
 import utils
 import sys  # This library is imported in order to access the program arguments
-import math
 
 if len(sys.argv) != 4:
     print('Incorrect number of arguments')
@@ -20,17 +19,24 @@ else:
     print('Correct calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
     exit(0)
 
-trainSegmentTagsDict, unigramDict, bigramDict = utils.analyzeFileQ2(trainFileName)
-
-with open('../exps/param.lex', 'w+') as f:
-    for segment, tagsDict in trainSegmentTagsDict.items():
-        row = segment
-        totalSegmentOccurrences = sum(tagsDict.values())
-        for tag, count in tagsDict.items():
-            row += '\t' + tag + '\t' + str(math.log(count / float(totalSegmentOccurrences)))
-        f.write(row + '\n')
+trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileQ2(trainFileName)
 
 if model == '2':
+    #if smoothing == False:
+    #for key, value in bigramDict.items():
+    #    bigramDict[key] = utils.transformProbability(value / float(unigramDict[key.split(',')[0]]))
+    #for key, value in unigramDict.items():
+    #    unigramDict[key] = utils.transformProbability(value / float(unigramCount))
+    #else:
+        
+    with open('../exps/param.lex', 'w+') as f:
+        for segment, tagsDict in trainSegmentTagsDict.items():
+            row = segment
+            totalSegmentOccurrences = sum(tagsDict.values())
+            for tag, count in tagsDict.items():
+                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
+            f.write(row + '\n')
+    
     with open('../exps/param.gram', 'w+') as f:
         f.write('\\data\\\n')
         f.write('ngram 1 = {}\n'.format(len(unigramDict)))
@@ -38,9 +44,15 @@ if model == '2':
         f.write('\n')
         f.write('\\1-grams\\\n')
         for key, value in unigramDict.items():
-            f.write('{}\t{}\n'.format(value, key))
+            f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramCount)), key))
         f.write('\n')
         f.write('\\2-grams\\\n')
         for key, value in bigramDict.items():
-            f.write('{}\t{}\n'.format(value, '\t'.join(key.split(','))))
+            f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
         f.write('\n')
+        
+#print unigramDict
+#print '\n'
+#print bigramDict
+#print '\n'
+#print trainSegmentTagsDict

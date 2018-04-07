@@ -40,7 +40,7 @@ if model == '1':
                 tags = emissionProbabilityDict.get(segment)
                 if tags != None:
                     maxPos = ''
-                    maxProb = float('-inf')
+                    maxProb = utils.nullProbability()
                     for key, value in tags.items():
                         if float(value) > maxProb:
                             maxPos = key
@@ -88,6 +88,5 @@ elif model == '2':
                     taggedFile.write('{}\t{}\n'.format(segment, tag))
                 taggedFile.write('\n')
                 sentence = []
-        
-    
+
     
