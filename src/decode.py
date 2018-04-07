@@ -16,41 +16,40 @@ if model == '2' and len(sys.argv) < 5:
 if len(sys.argv) == 5:
     paramFileNameGram = sys.argv[4]
 
-emissionProbabilityDict = {}
-
-with open(paramFileNameLex, 'r') as paramFileLex:
-    for line in paramFileLex:
-        splitLine = line.strip().split('\t')
-        seg = splitLine[0]
-        posProbs = splitLine[1:]
-        i = 0
-        currentSegmentDict = {}
-        while i < len(posProbs):
-            currentSegmentDict[posProbs[i]] = float(posProbs[i + 1])
-            i += 2
-        emissionProbabilityDict[seg] = currentSegmentDict
 
 if model == '1':
+    mostFrequentWord = {}
+    with open(paramFileNameLex, 'r') as paramFileLex:
+        for line in paramFileLex:
+            segment, tag = line.strip().split('\t')     
+            mostFrequentWord[segment] = tag
+            
     with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
         for line in testFile:
             segment = line.strip()        
             if segment == '':
                 taggedFile.write('\n')
             else:
-                tags = emissionProbabilityDict.get(segment)
-                if tags != None:
-                    maxPos = ''
-                    maxProb = utils.nullProbability()
-                    for key, value in tags.items():
-                        if float(value) > maxProb:
-                            maxPos = key
-                            maxProb = float(value)
-                    tag = maxPos
-                else:
+                tag = mostFrequentWord.get(segment)
+                if tag == None:
                     tag = 'NPP'
                 taggedFile.write('{}\t{}\n'.format(segment, tag))
                     
 elif model == '2':
+    emissionProbabilityDict = {}
+
+    with open(paramFileNameLex, 'r') as paramFileLex:
+        for line in paramFileLex:
+            splitLine = line.strip().split('\t')
+            seg = splitLine[0]
+            posProbs = splitLine[1:]
+            i = 0
+            currentSegmentDict = {}
+            while i < len(posProbs):
+                currentSegmentDict[posProbs[i]] = float(posProbs[i + 1])
+                i += 2
+            emissionProbabilityDict[seg] = currentSegmentDict
+    
     transitionProbabilityDict = {}
     states = set()
     with open(paramFileNameGram, 'r') as paramFileGram:
@@ -76,6 +75,7 @@ elif model == '2':
                 if transitionProbabilityDict.get(tag1) == None:
                     transitionProbabilityDict[tag1] = {}
                 transitionProbabilityDict[tag1][tag2] = float(prob)
+                
     with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
         sentence = []
         for line in testFile:

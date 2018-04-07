@@ -21,18 +21,21 @@ else:
 
 trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileQ2(trainFileName)
 
+if model == '1':
+    with open('../exps/param.lex', 'w+') as f:
+        for segment, tagsDict in trainSegmentTagsDict.items():
+            maxTag = ''
+            maxCount = 0
+            for tag, count in tagsDict.items():
+                if count >= maxCount:
+                    maxTag = tag
+                    maxCount = count
+            f.write(segment + '\t' + maxTag + '\n')
+            
 if model == '2':
-    #if smoothing == False:
-    #for key, value in bigramDict.items():
-    #    bigramDict[key] = utils.transformProbability(value / float(unigramDict[key.split(',')[0]]))
-    #for key, value in unigramDict.items():
-    #    unigramDict[key] = utils.transformProbability(value / float(unigramCount))
-    #else:
-        
     with open('../exps/param.lex', 'w+') as f:
         for segment, tagsDict in trainSegmentTagsDict.items():
             row = segment
-            totalSegmentOccurrences = sum(tagsDict.values())
             for tag, count in tagsDict.items():
                 row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
             f.write(row + '\n')
@@ -51,8 +54,3 @@ if model == '2':
             f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
         f.write('\n')
         
-#print unigramDict
-#print '\n'
-#print bigramDict
-#print '\n'
-#print trainSegmentTagsDict
