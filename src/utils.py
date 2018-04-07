@@ -92,10 +92,6 @@ def analyzeFileQ2(fileName):
             lastTag = '<S>'
             newLine = True
         line = f.readline()
-#    for key, value in bigramDict.items():
-#        bigramDict[key] = math.log(value / float(unigramDict[key.split(',')[0]]))
-#    for key, value in unigramDict.items():
-#        unigramDict[key] = math.log(value / float(count))
     return segmentTagsDict, unigramDict, bigramDict, unigramCount
 
 
@@ -124,11 +120,15 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
         if value >= overallMaxProb:
             overallMaxProb = value
             overallMaxState = key
-    tags.append(overallMaxState)
-    lastTag = overallMaxState
-    for i in reversed(range(len(b))):
-        newTag = b[i][lastTag]
-        tags.append(newTag)
-        lastTag = newTag
+    if overallMaxProb == nullProbability():
+        for i in range(len(sentence)):
+            tags.append('NPP')
+    else:
+        tags.append(overallMaxState)
+        lastTag = overallMaxState
+        for i in reversed(range(len(b))):
+            newTag = b[i][lastTag]
+            tags.append(newTag)
+            lastTag = newTag
     return list(reversed(tags))
     
