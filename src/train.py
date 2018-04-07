@@ -42,12 +42,14 @@ if model == '2':
     
     with open('../exps/param.gram', 'w+') as f:
         f.write('\\data\\\n')
-        f.write('ngram 1 = {}\n'.format(len(unigramDict)))
+        # we remove 2 since we do not want to count <S> and <E> as unigrams
+        f.write('ngram 1 = {}\n'.format(len(unigramDict) - 2))
         f.write('ngram 2 = {}\n'.format(len(bigramDict)))
         f.write('\n')
         f.write('\\1-grams\\\n')
         for key, value in unigramDict.items():
-            f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramCount)), key))
+            if key != '<S>' and key != '<E>':
+                f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramCount)), key))
         f.write('\n')
         f.write('\\2-grams\\\n')
         for key, value in bigramDict.items():
