@@ -32,24 +32,36 @@ if model == '1':
                     maxCount = count
             f.write(segment + '\t' + maxTag + '\n')
             
-if model == '2':
+if model == '2':   
+    
     with open('../exps/param.lex', 'w+') as f:
+        unkDict = {}
         for segment, tagsDict in trainSegmentTagsDict.items():
             row = segment
+            totalAppearances = 0
+            lastTag = ''
             for tag, count in tagsDict.items():
+                totalAppearances += count
+                lastTag = tag
+                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
+            if smoothing and totalAppearances == 1:
+                unkDict[lastTag] = unkDict.get(lastTag, 0) + 1
+            else:
+                f.write(row + '\n')
+        if smoothing:
+            row = 'UNK'
+            for tag, count in unkDict.items():
                 row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
             f.write(row + '\n')
     
     with open('../exps/param.gram', 'w+') as f:
         f.write('\\data\\\n')
-        # we remove 2 since we do not want to count <S> and <E> as unigrams
-        f.write('ngram 1 = {}\n'.format(len(unigramDict) - 2))
+        f.write('ngram 1 = {}\n'.format(len(unigramDict)))
         f.write('ngram 2 = {}\n'.format(len(bigramDict)))
         f.write('\n')
         f.write('\\1-grams\\\n')
         for key, value in unigramDict.items():
-            if key != '<S>' and key != '<E>':
-                f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramCount)), key))
+            f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramCount)), key))
         f.write('\n')
         f.write('\\2-grams\\\n')
         for key, value in bigramDict.items():

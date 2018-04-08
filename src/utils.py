@@ -87,6 +87,8 @@ def analyzeFileQ2(fileName):
                 unigramDict['<S>'] = unigramDict.get('<S>', 0) + 1
                 newLine = False
         else:
+            # counting <S> and <E> for current sentence
+            unigramCount += 2
             unigramDict['<E>'] = unigramDict.get('<E>', 0) + 1
             bigramDict[lastTag + ',<E>'] = bigramDict.get(lastTag + ',<E>', 0) + 1
             lastTag = '<S>'
@@ -97,38 +99,46 @@ def analyzeFileQ2(fileName):
 
 def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict):
     v = [{}]
-    b = []
     tags = []
     for state in states:
-        v[0][state] = aggregateProbabilities(transitionProbabilityDict['<S>'].get(state, nullProbability()), emissionProbabilityDict.get(sentence[0], {}).get(state, nullProbability()))
+        transitionProb = transitionProbabilityDict['<S>'].get(state, nullProbability())
+        if emissionProbabilityDict.get(sentence[0]) != None:
+            emissionProb = emissionProbabilityDict[sentence[0]].get(state, nullProbability())
+        else:
+            emissionProb = emissionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+        v[0][state] = aggregateProbabilities(transitionProb, emissionProb), ''
     for i in range(1, len(sentence)):
         v.append({})
-        b.append({})
         for state1 in states:
             maxProb = nullProbability()
             maxState = ''
             for state2 in states:
-                currentProb = aggregateProbabilities(aggregateProbabilities(v[i - 1][state2], transitionProbabilityDict.get(state2, {}).get(state1, nullProbability())), emissionProbabilityDict.get(sentence[i], {}).get(state1, nullProbability()))
+                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1, nullProbability())
+                if emissionProbabilityDict.get(sentence[i]) != None:
+                    emissionProb = emissionProbabilityDict[sentence[i]].get(state1, nullProbability())
+                else:
+                    emissionProb = emissionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
+                currentProb = aggregateProbabilities(aggregateProbabilities(v[i - 1][state2][0], transitionProb), emissionProb)
                 if currentProb >= maxProb:
                     maxState = state2
                     maxProb = currentProb
-            v[i][state1] = maxProb
-            b[i-1][state1] = maxState
+            v[i][state1] = maxProb, maxState
     overallMaxProb = nullProbability()
     overallMaxState = ''
-    for key, value in v[len(v) - 1].items():
-        if value >= overallMaxProb:
-            overallMaxProb = value
-            overallMaxState = key
+    for tag, (prob, prevTag) in v[len(v) - 1].items():
+        if prob >= overallMaxProb:
+            overallMaxProb = prob
+            overallMaxState = tag
     if overallMaxProb == nullProbability():
         for i in range(len(sentence)):
             tags.append('NPP')
     else:
         tags.append(overallMaxState)
         lastTag = overallMaxState
-        for i in reversed(range(len(b))):
-            newTag = b[i][lastTag]
-            tags.append(newTag)
+        for i in reversed(range(len(v))):
+            newTag = v[i][lastTag][1]
+            if newTag != '':
+                tags.append(newTag)
             lastTag = newTag
     return list(reversed(tags))
     
