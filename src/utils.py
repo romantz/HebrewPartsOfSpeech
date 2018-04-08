@@ -37,10 +37,9 @@ def decode(word):
 
 
 def analyzeFileQ1(fileName):
+    segmentTagPairs = set()
     segmentTagsDict = {}
-    tagSet = set()
     segmentCount = 0
-    tagCount = 0
 
     with open(fileName, "r") as f:
         for line in f:
@@ -48,15 +47,13 @@ def analyzeFileQ1(fileName):
             if line != '':
                 segmentCount += 1
                 segment, tag = line.split("\t")
-                tagSet.add(tag)
-                tagCount += 1
-
+                segmentTagPairs.add((segment, tag))
                 entryValue = segmentTagsDict.get(segment)
                 if entryValue == None:
                     segmentTagsDict[segment] = {tag: 1}
                 else:
                     segmentTagsDict[segment][tag] = entryValue.get(tag, 0) + 1
-    return segmentTagsDict, segmentCount, tagSet, tagCount
+    return segmentTagsDict, segmentTagPairs, segmentCount
 
 
 def analyzeFileQ2(fileName):
