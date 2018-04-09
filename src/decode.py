@@ -2,17 +2,15 @@ import utils
 import sys  # This library is imported in order to access the program arguments
 
 if len(sys.argv) < 4:
-    print('Incorrect number of arguments')
-    print('Correct calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]')
-    exit(0)
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]')
 
 model = sys.argv[1]
 testFileName = sys.argv[2]
 paramFileNameLex = sys.argv[3]
 
 if model == '2' and len(sys.argv) < 5:
-    print('Incorrect number of arguments')
-    print('Correct calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]')
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./decode < model > < heb-pos.test > < param-file1 > [< param-file2 >]')
+    
 if len(sys.argv) == 5:
     paramFileNameGram = sys.argv[4]
 
@@ -37,7 +35,6 @@ if model == '1':
                     
 elif model == '2':
     emissionProbabilityDict = {}
-
     with open(paramFileNameLex, 'r') as paramFileLex:
         for line in paramFileLex:
             splitLine = line.strip().split('\t')
@@ -75,7 +72,7 @@ elif model == '2':
                 if transitionProbabilityDict.get(tag1) == None:
                     transitionProbabilityDict[tag1] = {}
                 transitionProbabilityDict[tag1][tag2] = float(prob)
-                
+    
     with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
         sentence = []
         for line in testFile:

@@ -2,10 +2,7 @@ import utils
 import sys  # This library is imported in order to access the program arguments
 
 if len(sys.argv) != 4:
-    print('Incorrect number of arguments')
-    print('Correct calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
-    exit(0)
-
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
 model = sys.argv[1]
 trainFileName = sys.argv[2]
 smoothing = sys.argv[3]
@@ -15,9 +12,7 @@ if smoothing == 'y':
 elif smoothing == 'n':
     smoothing = False
 else:
-    print('Incorrect calling format')
-    print('Correct calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
-    exit(0)
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
 
 trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileQ2(trainFileName)
 
