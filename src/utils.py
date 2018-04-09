@@ -98,9 +98,12 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
     v = [{}]
     tags = []
     for state in states:
-        transitionProb = transitionProbabilityDict['<S>'].get(state, nullProbability())
-        if emissionProbabilityDict.get(sentence[0]) != None:
-            emissionProb = emissionProbabilityDict[sentence[0]].get(state, nullProbability())
+        transitionProb = transitionProbabilityDict.get('<S>', {}).get(state)
+        if transitionProb == None:
+            transitionProb = transitionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+        emissionProb = emissionProbabilityDict.get(sentence[0])
+        if emissionProb != None:
+            emissionProb = emissionProb.get(state, nullProbability())
         else:
             emissionProb = emissionProbabilityDict.get('UNK', {}).get(state, nullProbability())
         v[0][state] = aggregateProbabilities(transitionProb, emissionProb), ''
@@ -110,7 +113,9 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             maxProb = nullProbability()
             maxState = ''
             for state2 in states:
-                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1, nullProbability())
+                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1)
+                if transitionProb == None:
+                    transitionProb = transitionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
                 if emissionProbabilityDict.get(sentence[i]) != None:
                     emissionProb = emissionProbabilityDict[sentence[i]].get(state1, nullProbability())
                 else:

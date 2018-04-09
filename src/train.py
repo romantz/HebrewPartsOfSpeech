@@ -35,18 +35,21 @@ if model == '2':
             row = segment
             totalAppearances = 0
             lastTag = ''
+            lastCount = 0
             for tag, count in tagsDict.items():
                 totalAppearances += count
                 lastTag = tag
+                lastCount = count
                 row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
             if smoothing and totalAppearances == 1:
                 unkDict[lastTag] = unkDict.get(lastTag, 0) + 1
+                f.write(segment + '\t' + lastTag + '\t' + str(utils.transformProbability(lastCount / float(2 * unigramDict[lastTag]))) + '\n')
             else:
                 f.write(row + '\n')
         if smoothing:
             row = 'UNK'
             for tag, count in unkDict.items():
-                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
+                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(2 * unigramDict[tag])))
             f.write(row + '\n')
     
     with open('../exps/param.gram', 'w+') as f:
@@ -60,6 +63,10 @@ if model == '2':
         f.write('\n')
         f.write('\\2-grams\\\n')
         for key, value in bigramDict.items():
-            f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
+            if smoothing and value == 1:
+                f.write('{}\t{}\n'.format(utils.transformProbability(value / float(2 * unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
+                f.write('{}\tUNK\t{}\n'.format(utils.transformProbability(value / float(2 * unigramDict[key.split(',')[0]])), key.split(',')[1]))
+            else:
+                f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
         f.write('\n')
         
