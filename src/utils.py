@@ -8,6 +8,25 @@ letterLookup = {'A': 'א', 'B': 'ב', 'G': 'ג', 'D': 'ד', 'H': 'ה', 'V': 'ו'
                 'X': 'ח', 'T': 'ת', 'I': 'י', 'K': 'כ', 'L': 'ל', 'M': 'מ', 'N': 'נ', 'O': '%', 'J': 'ט',
                 'S': 'ס', 'E': 'ע', 'P': 'פ', 'C': 'צ', 'Q': 'ק', 'R': 'ר', 'F': 'ש'}
 
+logprob = True
+
+def nullProbability():
+    if logprob:
+        return float('-inf')
+    else:
+        return 0
+    
+def aggregateProbabilities(p1, p2):
+    if logprob:
+        return p1 + p2
+    else:
+        return p1 * p2
+
+def transformProbability(p):
+    if logprob:
+        return math.log(p)
+    else:
+        return p
 
 def decode(word):
     for sign, letter in signLookup.items():
@@ -18,10 +37,9 @@ def decode(word):
 
 
 def analyzeFileQ1(fileName):
+    segmentTagPairs = set()
     segmentTagsDict = {}
-    tagSet = set()
     segmentCount = 0
-    tagCount = 0
 
     with open(fileName, "r") as f:
         for line in f:
@@ -29,15 +47,13 @@ def analyzeFileQ1(fileName):
             if line != '':
                 segmentCount += 1
                 segment, tag = line.split("\t")
-                tagSet.add(tag)
-                tagCount += 1
-
+                segmentTagPairs.add((segment, tag))
                 entryValue = segmentTagsDict.get(segment)
                 if entryValue == None:
                     segmentTagsDict[segment] = {tag: 1}
                 else:
                     segmentTagsDict[segment][tag] = entryValue.get(tag, 0) + 1
-    return segmentTagsDict, segmentCount, tagSet, tagCount
+    return segmentTagsDict, segmentTagPairs, segmentCount
 
 
 def analyzeFileQ2(fileName):
@@ -45,7 +61,7 @@ def analyzeFileQ2(fileName):
     unigramDict = {}
     bigramDict = {}
     f = open(fileName, "r")
-    count = 0
+    unigramCount = 0
     lastTag = '<S>'
     unigramDict[lastTag] = 0
     newLine = True
@@ -54,7 +70,7 @@ def analyzeFileQ2(fileName):
     while line:
         line = line.strip()
         if line != '':
-            count += 1
+            unigramCount += 1
             segment, tag = line.split("\t")
             entryValue = segmentTagsDict.get(segment)
             if entryValue == None:
@@ -68,13 +84,58 @@ def analyzeFileQ2(fileName):
                 unigramDict['<S>'] = unigramDict.get('<S>', 0) + 1
                 newLine = False
         else:
+            # counting <S> and <E> for current sentence
+            unigramCount += 2
             unigramDict['<E>'] = unigramDict.get('<E>', 0) + 1
             bigramDict[lastTag + ',<E>'] = bigramDict.get(lastTag + ',<E>', 0) + 1
             lastTag = '<S>'
             newLine = True
         line = f.readline()
-    for key, value in bigramDict.items():
-        bigramDict[key] = math.log(value / float(unigramDict[key.split(',')[0]]), 10)
-    for key, value in unigramDict.items():
-        unigramDict[key] = math.log(value / float(count), 10)
-    return segmentTagsDict, unigramDict, bigramDict
+    return segmentTagsDict, unigramDict, bigramDict, unigramCount
+
+
+def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict):
+    v = [{}]
+    tags = []
+    for state in states:
+        transitionProb = transitionProbabilityDict['<S>'].get(state, nullProbability())
+        if emissionProbabilityDict.get(sentence[0]) != None:
+            emissionProb = emissionProbabilityDict[sentence[0]].get(state, nullProbability())
+        else:
+            emissionProb = emissionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+        v[0][state] = aggregateProbabilities(transitionProb, emissionProb), ''
+    for i in range(1, len(sentence)):
+        v.append({})
+        for state1 in states:
+            maxProb = nullProbability()
+            maxState = ''
+            for state2 in states:
+                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1, nullProbability())
+                if emissionProbabilityDict.get(sentence[i]) != None:
+                    emissionProb = emissionProbabilityDict[sentence[i]].get(state1, nullProbability())
+                else:
+                    emissionProb = emissionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
+                currentProb = aggregateProbabilities(aggregateProbabilities(v[i - 1][state2][0], transitionProb), emissionProb)
+                if currentProb >= maxProb:
+                    maxState = state2
+                    maxProb = currentProb
+            v[i][state1] = maxProb, maxState
+    overallMaxProb = nullProbability()
+    overallMaxState = ''
+    for tag, (prob, prevTag) in v[len(v) - 1].items():
+        if prob >= overallMaxProb:
+            overallMaxProb = prob
+            overallMaxState = tag
+    if overallMaxProb == nullProbability():
+        for i in range(len(sentence)):
+            tags.append('NPP')
+    else:
+        tags.append(overallMaxState)
+        lastTag = overallMaxState
+        for i in reversed(range(len(v))):
+            newTag = v[i][lastTag][1]
+            if newTag != '':
+                tags.append(newTag)
+            lastTag = newTag
+    return list(reversed(tags))
+    

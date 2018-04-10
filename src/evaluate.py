@@ -2,9 +2,7 @@
 import sys  # This library is imported in order to access the program arguments
 
 if len(sys.argv) != 5:
-    print('Incorrect number of arguments')
-    print('Correct calling format is: ./evaluate < *.tagged > < heb-pos.gold > < model > < smoothing(y/n) >')
-    exit(0)
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./evaluate < *.tagged > < heb-pos.gold > < model > < smoothing(y/n) >')
 
 taggedFileName = sys.argv[1]
 goldFileName = sys.argv[2]
@@ -16,10 +14,7 @@ if smoothing == 'y':
 elif smoothing == 'n':
     smoothing = False
 else:
-    print('Incorrect calling format')
-    print('Correct calling format is: ./evaluate < *.tagged > < heb-pos.gold > < model > < smoothing(y/n) >')
-    exit(0)
-
+    raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./evaluate < *.tagged > < heb-pos.gold > < model > < smoothing(y/n) >')
 with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFile, open('../exps/test.eval',
                                                                                         'w+') as evalFile:
     correctCount = 0
@@ -32,11 +27,10 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
 
     for taggedLine in taggedFile:
         goldLine = goldFile.readline().strip()
-        if goldLine == "":
+        if goldLine == '':
             N += 1
             if nj == 0:
-                print('An error occurred, exiting')
-                exit(0)
+                raise ValueError('An error occurred, exiting')
             segAccuracy = correctCount / float(nj)
             if segAccuracy == 1:
                 sentAccuracy = 1
@@ -50,8 +44,8 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
             nj = 0
         else:
             nj += 1
-            goldSegment, goldTag = goldLine.split("\t")
-            taggedSegment, taggedTag = taggedLine.strip().split("\t")
+            goldSegment, goldTag = goldLine.split('\t')
+            taggedSegment, taggedTag = taggedLine.strip().split('\t')
             if taggedSegment != goldSegment:
                 print('An error occurred, exiting')
                 exit(0)
