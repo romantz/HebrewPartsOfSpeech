@@ -30,7 +30,7 @@ if model == '1':
             else:
                 tag = mostFrequentWord.get(segment)
                 if tag == None:
-                    tag = 'NPP'
+                    tag = 'NNP'
                 taggedFile.write('{}\t{}\n'.format(segment, tag))
                     
 elif model == '2':
