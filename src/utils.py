@@ -56,7 +56,7 @@ def analyzeFileQ1(fileName):
     return segmentTagsDict, segmentTagPairs, segmentCount
 
 
-def analyzeFileQ2(fileName):
+def analyzeFileFull(fileName):
     segmentTagsDict = {}
     unigramDict = {}
     bigramDict = {}
@@ -66,7 +66,6 @@ def analyzeFileQ2(fileName):
     unigramDict[lastTag] = 0
     newLine = True
 
-    num = 5000
     line = f.readline()
     while line:
         line = line.strip()
@@ -92,9 +91,6 @@ def analyzeFileQ2(fileName):
             bigramDict[lastTag + ',<E>'] = bigramDict.get(lastTag + ',<E>', 0) + 1
             lastTag = '<S>'
             newLine = True
-            num -= 1
-            if num == 0:
-                break
         line = f.readline()
     return segmentTagsDict, unigramDict, bigramDict, unigramCount
 

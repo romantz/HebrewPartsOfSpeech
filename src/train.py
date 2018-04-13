@@ -14,7 +14,7 @@ elif smoothing == 'n':
 else:
     raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
 
-trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileQ2(trainFileName)
+trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileFull(trainFileName)
 
 if model == '1':
     with open('../exps/param.lex', 'w+') as f:
