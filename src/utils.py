@@ -66,6 +66,7 @@ def analyzeFileQ2(fileName):
     unigramDict[lastTag] = 0
     newLine = True
 
+    num = 5000
     line = f.readline()
     while line:
         line = line.strip()
@@ -83,6 +84,7 @@ def analyzeFileQ2(fileName):
             if newLine == True:
                 unigramDict['<S>'] = unigramDict.get('<S>', 0) + 1
                 newLine = False
+            
         else:
             # counting <S> and <E> for current sentence
             unigramCount += 2
@@ -90,6 +92,9 @@ def analyzeFileQ2(fileName):
             bigramDict[lastTag + ',<E>'] = bigramDict.get(lastTag + ',<E>', 0) + 1
             lastTag = '<S>'
             newLine = True
+            num -= 1
+            if num == 0:
+                break
         line = f.readline()
     return segmentTagsDict, unigramDict, bigramDict, unigramCount
 

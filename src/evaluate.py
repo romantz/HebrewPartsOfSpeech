@@ -80,6 +80,7 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
     totalAccuracy = totalAccuracy / float(N)
     evalFile.write('#\n')
     evalFile.write('macro-avg\t{}\t{}\n'.format(A, totalAccuracy))
+    print('macro-avg\t{}\t{}\n'.format(A, totalAccuracy))
     
     with open('../exps/confusion.matrix', 'w+') as confusionMatrixFile:
         for i in range(len(confusionMatrix)):
