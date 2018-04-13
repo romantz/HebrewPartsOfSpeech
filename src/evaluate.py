@@ -47,8 +47,7 @@ with open(taggedFileName, 'r') as taggedFile, open(goldFileName, 'r') as goldFil
             goldSegment, goldTag = goldLine.split('\t')
             taggedSegment, taggedTag = taggedLine.strip().split('\t')
             if taggedSegment != goldSegment:
-                print('An error occurred, exiting')
-                exit(0)
+                raise ValueError('An error occurred, exiting')
             if goldTag == taggedTag:
                 correctCount += 1
 

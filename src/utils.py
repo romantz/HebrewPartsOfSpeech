@@ -127,20 +127,23 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             v[i][state1] = maxProb, maxState
     overallMaxProb = nullProbability()
     overallMaxState = ''
-    for tag, (prob, prevTag) in v[len(v) - 1].items():
-        if prob >= overallMaxProb:
-            overallMaxProb = prob
-            overallMaxState = tag
-    if overallMaxProb == nullProbability():
-        for i in range(len(sentence)):
+    for i in reversed(range(len(v))):
+        for tag, (prob, prevTag) in v[i].items():
+            if prob >= overallMaxProb:
+                overallMaxProb = prob
+                overallMaxState = tag
+        if overallMaxProb == nullProbability():
             tags.append('NPP')
-    else:
+        else:
+            break
+    if i >= 0:
         tags.append(overallMaxState)
         lastTag = overallMaxState
-        for i in reversed(range(len(v))):
+        while i >= 0:
             newTag = v[i][lastTag][1]
             if newTag != '':
                 tags.append(newTag)
             lastTag = newTag
+            i -= 1
     return list(reversed(tags))
     
