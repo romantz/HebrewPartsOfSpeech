@@ -133,7 +133,7 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
                 overallMaxProb = prob
                 overallMaxState = tag
         if overallMaxProb == nullProbability():
-            tags.append('NPP')
+            tags.append('NNP')
         else:
             break
     if i >= 0:
