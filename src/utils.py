@@ -56,7 +56,7 @@ def analyzeFileQ1(fileName):
     return segmentTagsDict, segmentTagPairs, segmentCount
 
 
-def analyzeFileQ2(fileName):
+def analyzeFileFull(fileName):
     segmentTagsDict = {}
     unigramDict = {}
     bigramDict = {}
@@ -83,6 +83,7 @@ def analyzeFileQ2(fileName):
             if newLine == True:
                 unigramDict['<S>'] = unigramDict.get('<S>', 0) + 1
                 newLine = False
+            
         else:
             # counting <S> and <E> for current sentence
             unigramCount += 2
@@ -98,9 +99,12 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
     v = [{}]
     tags = []
     for state in states:
-        transitionProb = transitionProbabilityDict['<S>'].get(state, nullProbability())
-        if emissionProbabilityDict.get(sentence[0]) != None:
-            emissionProb = emissionProbabilityDict[sentence[0]].get(state, nullProbability())
+        transitionProb = transitionProbabilityDict.get('<S>', {}).get(state)
+        if transitionProb == None:
+            transitionProb = transitionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+        emissionProb = emissionProbabilityDict.get(sentence[0])
+        if emissionProb != None:
+            emissionProb = emissionProb.get(state, nullProbability())
         else:
             emissionProb = emissionProbabilityDict.get('UNK', {}).get(state, nullProbability())
         v[0][state] = aggregateProbabilities(transitionProb, emissionProb), ''
@@ -110,7 +114,9 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             maxProb = nullProbability()
             maxState = ''
             for state2 in states:
-                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1, nullProbability())
+                transitionProb = transitionProbabilityDict.get(state2, {}).get(state1)
+                if transitionProb == None:
+                    transitionProb = transitionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
                 if emissionProbabilityDict.get(sentence[i]) != None:
                     emissionProb = emissionProbabilityDict[sentence[i]].get(state1, nullProbability())
                 else:
@@ -122,20 +128,23 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             v[i][state1] = maxProb, maxState
     overallMaxProb = nullProbability()
     overallMaxState = ''
-    for tag, (prob, prevTag) in v[len(v) - 1].items():
-        if prob >= overallMaxProb:
-            overallMaxProb = prob
-            overallMaxState = tag
-    if overallMaxProb == nullProbability():
-        for i in range(len(sentence)):
-            tags.append('NPP')
-    else:
+    for i in reversed(range(len(v))):
+        for tag, (prob, prevTag) in v[i].items():
+            if prob >= overallMaxProb:
+                overallMaxProb = prob
+                overallMaxState = tag
+        if overallMaxProb == nullProbability():
+            tags.append('NNP')
+        else:
+            break
+    if i >= 0:
         tags.append(overallMaxState)
         lastTag = overallMaxState
-        for i in reversed(range(len(v))):
+        while i >= 0:
             newTag = v[i][lastTag][1]
             if newTag != '':
                 tags.append(newTag)
             lastTag = newTag
+            i -= 1
     return list(reversed(tags))
     

@@ -14,7 +14,7 @@ elif smoothing == 'n':
 else:
     raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
 
-trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileQ2(trainFileName)
+trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileFull(trainFileName)
 
 if model == '1':
     with open('../exps/param.lex', 'w+') as f:
@@ -35,20 +35,28 @@ if model == '2':
             row = segment
             totalAppearances = 0
             lastTag = ''
+            lastCount = 0
             for tag, count in tagsDict.items():
                 totalAppearances += count
                 lastTag = tag
+                lastCount = count
                 row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
             if smoothing and totalAppearances == 1:
                 unkDict[lastTag] = unkDict.get(lastTag, 0) + 1
+                f.write(segment + '\t' + lastTag + '\t' + str(utils.transformProbability(lastCount / float(2 * unigramDict[lastTag]))) + '\n')
             else:
                 f.write(row + '\n')
         if smoothing:
             row = 'UNK'
             for tag, count in unkDict.items():
-                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(unigramDict[tag])))
+                row += '\t' + tag + '\t' + str(utils.transformProbability(count / float(2 * unigramDict[tag])))
             f.write(row + '\n')
     
+    singleAppearances = 0
+    for key, value in bigramDict.items(): 
+        if value == 1:
+            singleAppearances += 1
+
     with open('../exps/param.gram', 'w+') as f:
         f.write('\\data\\\n')
         f.write('ngram 1 = {}\n'.format(len(unigramDict)))
@@ -60,6 +68,8 @@ if model == '2':
         f.write('\n')
         f.write('\\2-grams\\\n')
         for key, value in bigramDict.items():
+            if smoothing and value == 1:
+                f.write('{}\tUNK\t{}\n'.format(utils.transformProbability(value / float(singleAppearances)), key.split(',')[1]))
             f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
         f.write('\n')
         
