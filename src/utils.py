@@ -41,12 +41,12 @@ def analyzeFileQ1(fileName):
     segmentTagsDict = {}
     segmentCount = 0
 
-    with open(fileName, "r") as f:
+    with open(fileName, 'r') as f:
         for line in f:
             line = line.strip()
             if line != '':
                 segmentCount += 1
-                segment, tag = line.split("\t")
+                segment, tag = line.split('\t')
                 segmentTagPairs.add((segment, tag))
                 entryValue = segmentTagsDict.get(segment)
                 if entryValue == None:
@@ -60,7 +60,7 @@ def analyzeFileFull(fileName):
     segmentTagsDict = {}
     unigramDict = {}
     bigramDict = {}
-    f = open(fileName, "r")
+    f = open(fileName, 'r')
     unigramCount = 0
     lastTag = '<S>'
     unigramDict[lastTag] = 0
@@ -71,7 +71,7 @@ def analyzeFileFull(fileName):
         line = line.strip()
         if line != '':
             unigramCount += 1
-            segment, tag = line.split("\t")
+            segment, tag = line.split('\t')
             entryValue = segmentTagsDict.get(segment)
             if entryValue == None:
                 segmentTagsDict[segment] = {tag: 1}
