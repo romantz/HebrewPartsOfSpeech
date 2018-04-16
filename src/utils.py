@@ -11,6 +11,20 @@ letterLookup = {'A': 'א', 'B': 'ב', 'G': 'ג', 'D': 'ד', 'H': 'ה', 'V': 'ו'
 # The probability format. True for logprob and False for regular probability
 logprob = True
 
+def diminishProbability(transitionProb):
+    """
+    This function is used to diminish emission or transition probability
+    for a smoothed (UNK) value in order to ensure that if the value exists,
+    it would always be preferred over the smoothed value
+    
+    The value of dimValue has been derived empirically 
+    """
+    dimValue = 500
+    if logprob:
+        return transitionProb - math.log(dimValue)
+    else:
+        return transitionProb / float(dimValue)
+
 def nullProbability():
     """
     Get the null probability which is 0 for regular and negative 
@@ -192,7 +206,8 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             # If the given transition probability was not found we look for
             # the probability of P(state | UNK) in case smoothing used in 
             # training. If such probability doesn't exist, return null probability
-            transitionProb = transitionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+            transitionProb = diminishProbability(transitionProbabilityDict.get('UNK', {}).get(state, nullProbability()))
+            
         # The emission probability of the first iteration is P(W1 | state)
         # if the given segment was not found, we look for the probability 
         # of P(UNK | state)
@@ -200,7 +215,7 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
         if emissionProb != None:
             emissionProb = emissionProb.get(state, nullProbability())
         else:
-            emissionProb = emissionProbabilityDict.get('UNK', {}).get(state, nullProbability())
+            emissionProb = diminishProbability(emissionProbabilityDict.get('UNK', {}).get(state, nullProbability()))
             
         # The 0 element of v with the current state is the aggregation 
         # of the emissions and transition probabilities
@@ -215,14 +230,14 @@ def viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict
             if emissionProbabilityDict.get(sentence[i]) != None:
                 emissionProb = emissionProbabilityDict[sentence[i]].get(state1, nullProbability())
             else:
-                emissionProb = emissionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
+                emissionProb = diminishProbability(emissionProbabilityDict.get('UNK', {}).get(state1, nullProbability()))
             
             # calculate every possible transition probability and take the max
             for state2 in states:
                 transitionProb = transitionProbabilityDict.get(state2, {}).get(state1)
                 if transitionProb == None:
-                    transitionProb = transitionProbabilityDict.get('UNK', {}).get(state1, nullProbability())
-
+                    transitionProb = diminishProbability(transitionProbabilityDict.get('UNK', {}).get(state1, nullProbability()))
+                    
                 # Current probability is the aggregation between emission,
                 # transition and the previous value of v for state2
                 currentProb = aggregateProbabilities(aggregateProbabilities(v[i - 1][state2][0], transitionProb), emissionProb)
