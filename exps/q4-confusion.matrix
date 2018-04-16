@@ -1,0 +1,10 @@
+	NN	JJ	NNP	VB	yyCM	AT	H	IN	yyDOT	
+NN	      3       0       0       0       0       0       0       0       0
+JJ	      0       0       0       0       0       0       0       0       0
+NNP	      1       1       0       1       0       0       0       0       0
+VB	      0       0       0       1       0       0       0       0       0
+yyCM	      0       0       0       0       1       0       0       0       0
+AT	      0       0       0       0       0       1       0       0       0
+H	      0       0       0       0       0       0       1       0       0
+IN	      0       0       0       0       0       0       0       1       0
+yyDOT	      0       0       0       0       0       0       0       0       1

@@ -1,0 +1,15 @@
+#-------------------------------------
+#  Part-of-Speech Tagging Evaluation
+#-------------------------------------
+#
+#  Model: 2
+#  Smoothing: True
+#  Test File: ../results/q4.tagged
+#  Gold File: ../exps/q4.gold
+#
+#-------------------------------------
+# sent-num word-accuracy sent-accuracy
+#-------------------------------------
+1	0.75	0
+#-------------------------------------
+macro-avg	0.75	0.0
