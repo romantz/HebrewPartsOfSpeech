@@ -16,24 +16,31 @@ if len(sys.argv) == 5:
 
 
 if model == '1':
-    mostFrequentWord = {}
+    # If the model is 1, we read the lex file and save for each segment its
+    # most frequent tag in the dictionary mostFrequentTag
+    mostFrequentTag = {}
     with open(paramFileNameLex, 'r') as paramFileLex:
         for line in paramFileLex:
             segment, tag = line.strip().split('\t')     
-            mostFrequentWord[segment] = tag
+            mostFrequentTag[segment] = tag
             
-    with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
+    with open('../results/q2.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
         for line in testFile:
             segment = line.strip()        
             if segment == '':
                 taggedFile.write('\n')
             else:
-                tag = mostFrequentWord.get(segment)
+                # Each segment is tagged with the tag found in the dictionary
+                # If no tag has been found, the segment is tagged as NNP
+                tag = mostFrequentTag.get(segment)
                 if tag == None:
-                    tag = 'NPP'
+                    tag = 'NNP'
                 taggedFile.write('{}\t{}\n'.format(segment, tag))
                     
 elif model == '2':
+    # For model 2, we read the lex file and create the emissionProbabilityDict
+    # This dict maps a segment to a dictionary which maps a tag to the 
+    # probability that the segment is emitted by this tag
     emissionProbabilityDict = {}
     with open(paramFileNameLex, 'r') as paramFileLex:
         for line in paramFileLex:
@@ -47,6 +54,10 @@ elif model == '2':
                 i += 2
             emissionProbabilityDict[seg] = currentSegmentDict
     
+    # The transition probabilities are stored in transitionProbabilityDict
+    # These probabilities are derived from the .gram file.
+    # transitionProbabilityDict maps tag 1 to a dicionary which maps tag 2 to
+    # the probability that tag 1 is followed by tag 2
     transitionProbabilityDict = {}
     states = set()
     with open(paramFileNameGram, 'r') as paramFileGram:
@@ -73,13 +84,16 @@ elif model == '2':
                     transitionProbabilityDict[tag1] = {}
                 transitionProbabilityDict[tag1][tag2] = float(prob)
     
-    with open('../exps/test.tagged', 'w+') as taggedFile, open(testFileName, 'r') as testFile:
+    with open('../results/q3.tagged', 'w+') as (taggedFile
+        ), open(testFileName, 'r') as testFile:
         sentence = []
         for line in testFile:
             segment = line.strip()
             if segment != '':
                 sentence.append(segment)
             else:
+                # When we're done reading a sentence, we run the Viterbi
+                # algorithm on it to derive its tags
                 tags = utils.viterbi(sentence, states, emissionProbabilityDict, transitionProbabilityDict)
                 for segment, tag in zip(sentence, tags):
                     taggedFile.write('{}\t{}\n'.format(segment, tag))
