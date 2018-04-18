@@ -15,7 +15,6 @@ else:
     raise ValueError('Incorrect number of arguments \nCorrect calling format is: ./train < model > < heb-pos.train > < smoothing(y/n) >')
 
 trainSegmentTagsDict, unigramDict, bigramDict, unigramCount = utils.analyzeFileFull(trainFileName)
-#transitionProbabilitySmoothingNormalizationFactor = 2000
 
 
 # For model 1 (majority vote tagger) we create a file of the format 
@@ -86,8 +85,6 @@ if model == '2':
         f.write('\\2-grams\\\n')
         # Add all the 1-gram rows using unigramDict
         for key, value in bigramDict.items():
-#            if smoothing and value == 1:
-#                f.write('{}\tUNK\t{}\n'.format(utils.transformProbability(value / float(singleAppearances)), key.split(',')[1]))
             f.write('{}\t{}\n'.format(utils.transformProbability(value / float(unigramDict[key.split(',')[0]])), '\t'.join(key.split(','))))
         if smoothing:
             for key, value in singleAppearancesTagDict.items():
